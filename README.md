@@ -11,3 +11,9 @@ java多线程课程
 #### 4. 多线程存在那些问题？如何解决这些问题？
 
 #### 5. 多线程在Java中实践实战经验
+
+#### 6. 程序运行
+     > java  -Djava.ext.dirs=/data/storage/thread/threadCourse -cp . com.tinygao.thread.runcpu.MultiRunCpu $1 $2
+     > java  -Djava.ext.dirs=/data/storage/thread/threadCourse -cp . com.tinygao.thread.runcpu.SingleRunCpu $1 $2
+     > /runMultiCpu.sh  500000000000 4
+     > /runSingleCpu.sh  500000000000 true
