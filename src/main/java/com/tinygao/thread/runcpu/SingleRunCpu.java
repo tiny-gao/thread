@@ -1,9 +1,12 @@
 package com.tinygao.thread.runcpu;
 
-import com.google.common.base.*;
-import com.google.common.primitives.Booleans;
-import com.google.common.util.concurrent.RateLimiter;
+import java.util.concurrent.TimeUnit;
+
 import lombok.extern.slf4j.Slf4j;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
+import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * Created by gsd on 2017/1/15.
@@ -24,12 +27,23 @@ public class SingleRunCpu {
             }
         });
 
-        while(time < 1000000000000L) {
+        runCpu(1_000_000_000_000L,Boolean.parseBoolean(args[1]), rateLimiter);
+    }
+    
+	public static void runCpu(final long maxCount, final boolean isRateLimit, final RateLimiter rateLimiter) {
+		Stopwatch sw = Stopwatch.createStarted();
+        
+		while(time < maxCount) {
             time++;
-            if(Boolean.parseBoolean(args[1])) {
+            if(isRateLimit) {
                 rateLimiter.acquire(1);
             }
         }
-    }
+		log.info("runCpu waster time : {} s" ,
+                sw.elapsed(TimeUnit.SECONDS)
+        );
+
+        sw.stop();
+	}
 
 }
