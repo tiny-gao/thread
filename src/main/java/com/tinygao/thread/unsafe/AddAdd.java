@@ -6,9 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
 import java.sql.Time;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.concurrent.*;
 
 /**
  * Created by gsd on 2017/2/4.
@@ -27,19 +26,26 @@ public class AddAdd {
         return ++count;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         AddAdd add = new AddAdd();
-        ExecutorService es = Executors.newFixedThreadPool(1000);
-        for(int i = 0; i < 1000000; i++) {
-            es.submit(()->{
+        ExecutorService es = Executors.newFixedThreadPool(2);
+        for(int i = 0; i < 100000; i++) {
+            Future<int[]> result1 = es.submit(()->{
                 int tmp = add.getCount();
                 int count = add.service();
-                try {
-                    Preconditions.checkState(tmp == count - 1, "tmp:%s, count:%s", tmp, count);
-                } catch (IllegalStateException e) {
-                    log.error(e.getMessage());
-                }
+                return new int[]{tmp,count};
             });
+            Future<int[]> result2 = es.submit(()->{
+                int tmp = add.getCount();
+                int count = add.service();
+                return new int[]{tmp,count};
+            });
+            result1.get();
+            result2.get();
+            add.count = 0;
+            if(result1.get()[1] == result2.get()[1]) {
+                log.info("result1:{}, result2:{}", result1.get(), result2.get());
+            }
         }
         es.shutdown();
     }
